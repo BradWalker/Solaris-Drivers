@@ -1,0 +1,34 @@
+#	COPYRIGHT (c) 1992-1996 AURORA TECHNOLOGIES, INC., WALTHAM, MA.
+#
+#	THIS SOFTWARE IS FURNISHED UNDER A LICENSE AND MAY BE USED AND
+#	COPIED ONLY IN ACCORDANCE WITH THE TERMS OF SUCH LICENSE AND WITH
+#	THE INCLUSION OF THE ABOVE COPYRIGHT NOTICE.  THIS SOFTWARE OR
+#	ANY OTHER COPIES THEREOF MAY NOT BE PROVIDED OR OTHERWISE MADE
+#	AVAILABLE TO ANY OTHER PERSON.  NO TITLE TO AND OWNERSHIP OF THE
+#	PROGRAM IS HEREBY TRANSFERRED.
+#	
+#	THE INFORMATION IN THIS SOFTWARE IS SUBJECT TO CHANGE WITHOUT
+#	NOTICE AND SHOULD NOT BE CONSIDERED AS A COMMITMENT BY AURORA
+#	TECHNOLOGIES, INC.
+#
+#	info: @(#)$Header: /vol/sources.cvs/dev/sio16.svr4/prototype,v 1.8 1996/09/20 21:20:56 bkd Exp $
+#
+# ftype	class	path				access	owner	group
+
+i	pkginfo
+i 	postinstall
+i	preremove
+i	copyright
+i	depend
+e	sed	/etc/system			0444	root	sys
+e	sed	/etc/iu.ap			0444	root	sys
+e	sed	/etc/path_to_inst		0444	root	sys
+d	none	AURAsio16			0755	root	sys
+f	none	AURAsio16/sio16_ioctl.h		0444	bin 	bin
+f	none	AURAsio16/mset			0555	root	sys
+f	none	AURAsio16/xxtrace		0555	root	sys
+f	none	AURAsio16/prtrace		0555	root	sys
+f       none    AURAsio16/sysinfo		0555	root	sys
+f       none    AURAsio16/ttysoftcar		0555	root	sys
+f	none	AURAsio16/sourceme		0555	root	sys
+f	none	/kernel/drv/sio16		0755	root	sys

@@ -1,0 +1,50 @@
+#	COPYRIGHT (c) 1992-1996 AURORA TECHNOLOGIES, INC., WALTHAM, MA.
+#
+#	THIS SOFTWARE IS FURNISHED UNDER A LICENSE AND MAY BE USED AND
+#	COPIED ONLY IN ACCORDANCE WITH THE TERMS OF SUCH LICENSE AND WITH
+#	THE INCLUSION OF THE ABOVE COPYRIGHT NOTICE.  THIS SOFTWARE OR
+#	ANY OTHER COPIES THEREOF MAY NOT BE PROVIDED OR OTHERWISE MADE
+#	AVAILABLE TO ANY OTHER PERSON.  NO TITLE TO AND OWNERSHIP OF THE
+#	PROGRAM IS HEREBY TRANSFERRED.
+#	
+#	THE INFORMATION IN THIS SOFTWARE IS SUBJECT TO CHANGE WITHOUT
+#	NOTICE AND SHOULD NOT BE CONSIDERED AS A COMMITMENT BY AURORA
+#	TECHNOLOGIES, INC.
+#
+#	Postinstallation script
+#
+#	BASEDIR below is saved, cleared and reset because rm_drv uses
+#	BASEDIR
+#
+#	exit 20 tells pkgadd to tell the end user to reboot the system after
+#	the install and exit 2 tells pkgadd to tell the user that the
+#	installation partially failed
+#
+#	info: @(#)$Header: /vol/sources.cvs/dev/sio16.svr4/postinstall,v 1.6 1996/09/20 21:19:00 bkd Exp $
+
+SAVEBASE=$BASEDIR
+BASEDIR=""; export BASEDIR
+
+#
+# sync files, just in case!
+#
+/usr/bin/sync
+
+/usr/sbin/add_drv -m '* 0666 root sys' sio16
+STATUS=$?
+if [ $STATUS -ne 0 ]
+then
+	exit 2
+fi
+
+#
+# set up the STREAMS autopush mechanism
+#
+autopush -f /etc/iu.ap 2> /dev/null
+
+#
+# sync files, just in case!
+#
+/usr/bin/sync
+
+BASEDIR=$SAVEBASE; export BASEDIR

@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+# This script takes an xxtrace "event.h" file and fills in the indexes
+# to each "#define" statement.
+#
+
+progname="`basename $0`"
+if [ $# -lt 2 ] ; then
+	echo "usage: $progname <infile> <outfile>"
+	exit 1
+fi
+
+if [ ! -f $1 ] ; then
+	echo "$1 does not exist!"
+	exit
+fi
+
+if [ -f $2 ] ; then
+	echo "$2 already exists!"
+	exit
+fi
+
+awk -f - $1 << END_OF_SCRIPT > $2
+BEGIN		{ id = 1; pad = "                                    "; }
+/^#define/	{ print "";
+		  out=sprintf("%s %s %s %d",\$1,\$2,substr(pad,length(\$1 \$2)),id++);
+		  print out;
+		  next;
+		}
+/./		{ print \$0 }
+END		{ }
+END_OF_SCRIPT

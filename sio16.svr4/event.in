@@ -1,0 +1,738 @@
+/*@(#)$Header: /vol/sources.cvs/dev/sio16.svr4/event.in,v 1.7.2.2 1996/10/17 03:35:13 bkd Exp $
+ *
+ * Events 
+ *
+ * This file is a .h file even though it has initialized data because
+ * we want to this the only file that has to be editted to add new events.
+ *
+ * The driver is the only file which includes this file.
+ *
+ * The events are built into the driver so that the utilities xxtrace
+ * and printtrace are independent of the event name list.
+ *
+ * The first entry is not used.  The list must be terminated by a NULL.
+ */
+
+#include <stdio.h>
+#include "xxtrace.h"
+
+#ifdef XXTRACE
+
+/*
+ * $Log: event.in,v $
+ * Revision 1.7.2.2  1996/10/17 03:35:13  bkd
+ * Added msvr values to TIOCMSET, TIOCMBIC, TIOCMBIS and
+ * TIOCMGET XTs
+ *
+ * Revision 1.7.2.1  1996/10/08 22:46:25  bkd
+ * Added new XTs for resrv; removed unused
+ * XTs in rsrv
+ *
+ * Revision 1.7  1996/09/20 21:15:09  bkd
+ * + switched to xxtrace.svr4-style (added include headers,
+ *   changed definition of eventhdr, removed final NULL event)
+ * + added iocput() messages
+ * + added extra WPUT_L2_M_IOCTL/IOCDATA messages to handle
+ *   transparent ioctls (ripped off from acsa)
+ *
+ * Revision 1.6  1995/08/15 23:38:15  bkd
+ * Added Header and Log CVS fields.
+ *
+ */
+struct event event_tab[] = {
+	{ "NULL",			NULL				},
+
+/*
+ * * * Events for SERIAL PORTS
+ */
+
+/*
+ * open
+ */
+
+#define OPEN_L1_ENTRY	
+        { "open.l1.entry",		"q=0x%x, flag=%d, minor=0x%x"	},
+
+#define OPEN_L1_EXIT
+        { "open.l1.exit",		"line %d"			},
+
+#define	OPEN_L2_SLEEP_CFHANG
+	{ "open.l2.sleep_cfhang",	"sleep on CF_HANG"		},
+
+#define OPEN_L2_SLEEP_INT
+        { "open.l2.sleep_int",		"sleep interrupted! line %d"	},
+
+#define	OPEN_L2_WAKEUP_CFHANG
+	{ "open.l2.wakeup_cfhang",	"wakeup from CF_HANG sleep"	},
+
+#define OPEN_L2_1STOPEN
+        { "open.l2.1stopen",		"first open"			},
+
+#define OPEN_L2_EXCLUDE
+        { "open.l2.exclude",		"already exclusive open"	},
+
+#define OPEN_L2_DTR
+        { "open.l2.dtr",		"raise DTR & RTS"		},
+
+#define OPEN_L2_MSR
+	{ "open.l2.msr",		"msr=0x%x"			},
+
+#define	OPEN_L2_SLEEP_CD
+	{ "open.l2.sleep_cd",		"sleep on CD"			},
+
+#define OPEN_L2_WAKEUP_CD
+	{ "open.l2.wakeup_cd",		"wakeup from CD sleep"		},
+
+#define	OPEN_L2_FIFO
+	{ "open.l2.fifo",		"FIFO set, FCR = 0x%x"		},
+
+/*
+ * close
+ */
+
+#define CLOSE_L1_ENTRY
+        { "close.l1.entry",		"q=0x%x\tflag=0x%x"		},
+
+#define CLOSE_L2_WAIT
+        { "close.l2.sleep", "lasttxmp = 0x%x, ringcnt = %d, flags = 0x%x"},
+
+#define CLOSE_L2_TIMEOUT
+        { "close.l2.timeout",		 "timeout from close at %d"	},
+
+#define CLOSE_L1_EXIT
+        { "close.l1.exit",		"line %d"			},
+
+#define CLOSE_L2_DTR	
+        { "close.l2.dtr",		"lower DTR & RTS"		},
+
+/*
+ * wput
+ */
+
+#define WPUT_L1_ENTRY
+        { "wput.l1.entry",		"q=0x%x\tmp=0x%x"		},
+
+#define WPUT_L1_EXIT
+        { "wput.l1.exit",		"line %d"			},
+
+#define WPUT_L2_M_STOP	
+        { "wput.l2.m_stop",		"M_STOP"			},
+
+#define WPUT_L2_M_START
+        { "wput.l2.m_start",		"M_START"			},
+
+#define WPUT_L2_SETBRK
+        { "wput.l2.setbrk",		"SETBRK ioc_cmd %d"		},
+
+#define WPUT_L2_M_IOCTL
+        { "wput.l2.m_ioctl",	
+				"M_IOCTL cmd 0x%x id 0x%x count %d"	},
+
+#define WPUT_L2_M_IOCTL_TRANS
+	{ "wput.l2.m_ioctl_trans",
+				"M_IOCTL: size_needed %d uaddr 0x%x"	},
+
+#define WPUT_L2_M_IOCDATA
+	{ "wput.l2.m_iocdata",	
+			"M_IOCDATA cmd 0x%x id 0x%x private 0x%x"	},
+
+#define WPUT_L2_M_IOCDATA_FAIL
+	{ "wput.l2.m_iocdata_fail",
+			"M_IOCDATA: copyin/copyout failed, rval %d"	},
+
+#define WPUT_L2_M_IOCDATA_INERR
+	{ "wput.l2.m_iocdata_inerr",
+			"M_IOCDATA: copyin error cmd 0x%x id 0x%x"	},
+
+#define WPUT_L2_M_IOCDATA_OUT
+	{ "wput.l2.m_iocdata_out",
+				"M_IOCDATA: copyout cmd 0x%x id 0x%x"	},
+
+#define WPUT_L2_M_IOCDATA_OUTERR
+	{ "wput.l2.m_iocdata_outerr",
+			"M_IOCDATA: copyout error cmd 0x%x id 0x%x"	},
+
+#define	WPUT_L2_TCSBRK
+	{ "wput.l2.tcsbrk",		"TCSBRK"			},
+
+#define WPUT_L2_M_FLUSH
+        { "wput.l2.m_flush",		"M_FLUSH"			},
+
+#define WPUT_L2_M_STOPI
+        { "wput.l2.m_stopi",		"M_STOPI"			},
+
+#define WPUT_L2_M_STARTI
+        { "wput.l2.m_starti",		"M_STARTI"			},
+
+#define WPUT_L2_M_DATA
+        { "wput.l2.m_data",		"M_DATA"			},
+
+#define WPUT_L2_M_BREAK
+        { "wput.l2.m_break",		"M_BREAK, M_DELAY"		},
+
+#define WPUT_L2_UNKNOWN
+        { "wput.l2.unknown",		"unknown stream msg=0x%x"	},
+
+/*
+ * wsrv
+ */
+
+#define WSRV_L1_ENTRY	
+        { "wsrv.l1.entry",		"q=0x%x"			},
+
+#define WSRV_L1_EXIT
+        { "wsrv.l1.exit",		"line %d"			},
+
+/*
+ * rsrv
+ */
+
+#define RSRV_L1_ENTRY
+        { "rsrv.l1.entry",		"q=0x%x"			},
+
+#define RSRV_L1_EXIT
+        { "rsrv.l1.exit",		"line %d"			},
+
+#define RSRV_L2_PUTNEXT
+        { "rsrv.l2.putnext",		"putnext, bp=0x%x"		},
+
+#define RSRV_L2_RINGCC
+        { "rsrv.l2.ringcc",		"ringcnt=%d"			},
+
+#define RSRV_L2_ALLOCFAIL
+        { "rsrv.l2.allocfail",		"failed to allocate %d bytes"	},
+
+#define	RSRV_L2_MSGDONE
+	{ "rsrv.l2.msgdone",		"msg done: count=%d, left=%d"	},
+
+/*
+ * rersrv
+ */
+
+#define RERSRV_L1_ENTRY
+	{ "rersrv.l1.entry",		""				},
+
+#define RERSRV_L1_EXIT
+	{ "rersrv.l1.exit",		""				},
+
+/*
+ * ioctl
+ */
+
+#define IOCTL_L1_ENTRY
+        { "ioctl.l1.entry",		"siop=0x%x\tq=0x%x\tmp=0x%x"	},
+
+#define IOCTL_L1_EXIT
+        { "ioctl.l1.exit",		"line %d"			},
+
+#define IOCTL_L2_TCSET
+        { "ioctl.l2.tcset",		"cmd = 0x%x"			},
+
+#define IOCTL_L2_ZZTCSBRK
+        { "ioctl.l2.zztcsbrk",		"copy of TCSBRK"		},
+
+#define IOCTL_L2_SETTIMEOUT
+        { "ioctl.l2.settimeout",	"set timeout value = %d"	},
+
+#define IOCTL_L2_GETTIMEOUT
+        { "ioctl.l2.gettimeout",	"get timeout value = %d"	},
+
+#define IOCTL_L2_GETMFLG
+        { "ioctl.l2.getmflg",		"modem_flag = 0x%x"		},
+
+#define	IOCTL_L2_RTS
+	{ "ioctl.l2.rts",		"set RTS for device"		},
+
+#define IOCTL_L2_DTR
+        { "ioctl.l2.dtr",		"set DTR for device"		},
+
+#define IOCTL_L2_CTS
+        { "ioctl.l2.cts",		"set CTS for device"		},
+
+#define IOCTL_L2_CD
+        { "ioctl.l2.cd",		"set CD for device"		},
+
+#define IOCTL_L2_RTSFLOW
+        { "ioctl.l2.rtsflow",	"set for RTS hardware flow control"	},
+
+#define IOCTL_L2_DTRFLOW
+        { "ioctl.l2.dtrflow",	"set for DTR hardware flow control"	},
+
+#define IOCTL_L2_SETBAUD
+        { "ioctl.l2.setbaud",		"setbaud %d"			},
+
+#define IOCTL_L2_GETBAUD
+        { "ioctl.l2.getbaud",		"getbaud %d"			},
+
+#define	IOCTL_L2_TCSBRK
+	{ "ioctl.l2.tcsbrk",		"TCSBRK %d"			},
+
+#define	IOCTL_L2_TIOCSBRK
+	{ "ioctl.l2.tiocsbrk",		"TIOCSBRK"			},
+
+#define	IOCTL_L2_TIOCCBRK
+	{ "ioctl.l2.tioccbrk",		"TIOCCBRK"			},
+
+#define	IOCTL_L2_TIOCSDTR
+	{ "ioctl.l2.tiocsdtr",		"TIOCSDTR"			},
+
+#define	IOCTL_L2_TIOCCDTR
+	{ "ioctl.l2.tioccdtr",		"TIOCCDTR"			},
+
+#define	IOCTL_L2_TIOCMSET
+	{ "ioctl.l2.tiocmset",		"TIOCMSET 0x%x, new msvr 0x%x"	},
+
+#define	IOCTL_L2_TIOCMBIS
+	{ "ioctl.l2.tiocmbis",		"TIOCMBIS 0x%x, new msvr 0x%x"	},
+
+#define	IOCTL_L2_TIOCMBIC
+	{ "ioctl.l2.tiocmbic",		"TIOCMBIC 0x%x, new msvr 0x%x"	},
+
+#define	IOCTL_L2_TIOCMGET
+	{ "ioctl.l2.tiocmget",		"TIOCMGET 0x%x, msvr 0x%x"	},
+
+#define IOCTL_L2_TIOCMGET_NOCOPYOUT
+	{ "ioctl.l2.tiocmget_nocopyout", "TIOCMGET (nocopyout) val=0x%x" },
+
+#define IOCTL_L2_TIOCMGET_COPYOUT
+	{ "ioctl.l2.tiocmget_copyout", "TIOCMGET (copyout) uaddr=0x%x, val=0x%x" },
+
+#define IOCTL_L2_SIO_STATS
+        { "ioctl.l2.sio_stats",         "SIO_STATS/SIO_STATS_RST"       },
+
+#define IOCTL_L2_SIO_STATS_CHK
+        { "ioctl.l2.sio_stats_chk",     "SIO_STATS_CHK"                 },
+
+#define IOCTL_L2_SIO_STATS_RST_ALL
+        { "ioctl.l2.sio_stats_rst_all", "SIO_STATS_RST_ALL"             },
+
+#define	IOCTL_L2_UNKNOWN
+	{ "ioctl.l2.unknown",		"unknown ioctl = 0x%x"		},
+
+#define IOCTL_L2_IOCNAK
+        { "ioctl.l2.iocnak",		"ioctl error, M_IOCNAK"		},
+
+#define IOCTL_L2_IOCACK
+        { "ioctl.l2.iocack",		"ioctl acknowledge, M_IOCACK"	},
+/*
+ * reioctl
+ */
+
+#define REIOCTL_L1_ENTRY
+        { "reioctl.l1.entry",		"cfl = 0x%x"			},
+
+#define REIOCTL_L1_EXIT
+        { "reioctl.l1.exit",		"line %d"			},
+
+#define	REIOCTL_L2_IOCTL
+	{ "reioctl.l2.ioctl",	"call ioctl (cfl=0x%x, q=0x%x, mp=0x%x)"},
+
+/*
+ * param
+ */
+
+#define PARAM_L1_ENTRY
+        { "param.l1.entry",		"siop=0x%x"			},
+
+#define PARAM_L1_EXIT
+        { "param.l1.exit",		"line %d"			},
+
+#define PARAM_L1_FLAGS
+        { "param.l1.flags",		"cflag=0x%x, iflag=0x%x"	},
+
+#define PARAM_L2_CSIZE
+        { "param.l2.csize",		"char size=%d"			},
+
+#define	PARAM_L2_PAREVEN
+	{ "param.l2.pareven",		"parity enabled even"		},
+
+#define	PARAM_L2_PARODD
+	{ "param.l2.parodd",		"parity enabled odd"		},
+
+#define	PARAM_L2_PARDIS
+	{ "param.l2.pardis",		"parity disabled"		},
+
+#define	PARAM_L2_STOP
+	{ "param.l2.stop",		"%d stop bits"			},
+
+#define	PARAM_L2_SETBAUD0
+	{ "param.l2.setbaud0",		"set baud=0, lower DTR"		},
+
+#define PARAM_L2_BAUDRATE
+	{ "param.l2.baudrate",		"baudrate=%d"			},
+
+#define	PARAM_L2_COR1
+	{ "param.l2.cor1",		"cor1=0x%x"			},
+
+#define	PARAM_L2_COR2
+	{ "param.l2.cor2",		"cor2=0x%x"			},
+
+#define	PARAM_L2_COR3
+	{ "param.l2.cor3",		"cor3=0x%x"			},
+
+/*
+ * start
+ */
+
+#define START_L3_ENTRY
+        { "start.l3.entry",		"siop=0x%x, flags=0x%x"		},
+
+#define START_L3_EXIT
+        { "start.l3.exit",		"line %d"			},
+
+#define	START_L3_STOPPED
+	{ "start.l3.stopped",		"output stopped (CF_OSTOPPED)"	},
+
+#define	START_L3_TXSTOP
+	{ "start.l3.txstop",		"output stopped (h/w)"		},
+
+#define START_L3_M_IOCTL
+	{ "start.l3.m_ioctl",		"M_IOCTL, tfsr=0x%x, dmabsts=0x%x" },
+
+#define START_L3_M_IOCDATA
+	{ "start.l3.m_iocdata",		"M_IOCDATA, tfsr=0x%x, dmabsts=0x%x" },
+
+#define START_L3_M_DATA
+        { "start.l3.m_data",		"M_DATA"			},
+
+#define START_L3_M_BREAK
+        { "start.l3.m_break",		"M_BREAK"			},
+
+#define	START_L3_M_DELAY
+	{ "start.l3.m_delay",		"M_DELAY"			},
+
+#define	START_L3_M_UNKNOWN
+	{ "start.l3.m_unknown",		"Unknown Message, db_type=0x%x"	},
+
+#define START_L3_COUNT
+        { "start.l3.count",		"xmit %d chars, msg cnt %d"	},
+
+#define START_L3_XMITCHAR
+        { "start.l3.xmitchar",		"xmit 0x%x '%c', line %d"	},
+
+#define START_L3_LASTTXMP
+        { "start.l2.lasttxmp",		"lasttxmp == NULL"		},
+
+#define START_L3_UNKNOWN
+        { "start.l3.unknown",		"unknown ioctl 0x%x"		},
+
+/*
+ * rstrt
+ */
+
+#define	RSTRT_L1_ENTRY
+	{ "rstrt.l1.entry",		NULL				},
+
+#define	RSTRT_L1_EXIT
+	{ "rstrt.l1.exit",		"line %d"			},
+
+/*
+ * mset
+ */
+
+#define	SETDTRRTS_L1_ENTRY
+	{ "setdtrrts.l1.entry",		"siop=0x%x, value=0x%x, now=%d"	},
+
+#define	SETDTRRTS_L1_EXIT
+	{ "setdtrrts.l1.exit",		"line %d"			},
+
+#define	SETDTRRTS_L2_SETBITS
+	{ "setdtrrts.l2.setbits",	"set DTR & RTS, time=%d, dtrlow=%d"	},
+
+#define	SETDTRRTS_L2_DTRLOW
+	{ "setdtrrts.l2.dtrlow",	"setting cfp->dtrlow"		},
+
+#define	SETDTRRTS_L2_SLEEP
+	{ "setdtrrts.l2.sleep",		"sleeping"			},
+
+/*
+ * intr
+ */
+
+#define INTR_L3_ENTRY
+        { "intr.l3.entry",		"board = %d"			},
+
+#define INTR_L3_EXIT
+        { "intr.l3.exit",		"serviced = %d"			},
+
+#define	INTR_L3_UNKNOWN
+	{ "intr.l3.unknown",		"unknown interrupt=0x%x"	},
+
+#define	INTR_L3_VECTOR
+	{ "intr.l3.vector",		"vector = 0x%x"			},
+
+#define	INTR_L3_PORTID
+	{ "intr.l3.portid",		"chip = 0x%x, port = 0x%x"	},
+
+#define	INTR_L3_AGAIN
+	{ "intr.l3.again",		"servicing another interrupt"	},
+
+/*
+ * rxintr
+ */
+
+#define RXINTR_L3_ENTRY
+        { "rxintr.l3.entry",		"siop = 0x%x"			},
+
+#define RXINTR_L3_EXIT
+        { "rxintr.l3.exit",		"line %d"			},
+
+#define RXINTR_L3_RCVCHAR
+	{ "rxintr.l3.rcvchar",		"received char 0x%x '%c'"	},
+
+#define RXINTR_L3_TXSTOP
+        { "rxintr.l3.txstop",		"received xoff, stop xmit"	},
+
+#define RXINTR_L3_TXSTART
+        { "rxintr.l3.txstart",		"received xon, start xmit"	},
+
+#define RXINTR_L3_RING_OVR
+        { "rxintr.l3.ring_ovr",		"ring buffer overflow"		},
+
+#define RXINTR_L3_QENABLE
+        { "rxintr.l3.qenable",		"qenable"			},
+
+#define RXINTR_L3_THROTTLE
+        { "rxintr.l3.throttle",	"throttling back, about to overflow ring"},
+
+/*
+ * rsintr
+ */
+
+#define RSINTR_L3_ENTRY
+        { "rsintr.l3.entry",		"siop = 0x%x\trcsr = 0x%x"	},
+
+#define RSINTR_L3_EXIT
+        { "rsintr.l3.exit",		"line %d"			},
+
+#define	RSINTR_L3_OVRRUN
+	{ "rsintr.l3.ovrrun",		"over run!"			},
+
+#define RSINTR_L3_RING_OVR
+        { "rsintr.l3.ring_ovr",		"ring buffer overflow"		},
+
+#define	RSINTR_L3_FRMERR
+	{ "rsintr.l3.frmerr",		"frame error!"			},
+
+#define	RSINTR_L3_BRKDET
+	{ "rsintr.l3.brkdet",		"received BREAK"		},
+
+#define	RSINTR_L3_PARERR
+	{ "rsintr.l3.parerr",		"parity error! 0x%x '%c'"	},
+
+#define RSINTR_L3_TXSTOP
+        { "rsintr.l3.txstop",		"received xoff, stop xmit"	},
+
+#define RSINTR_L3_TXSTART
+        { "rsintr.l3.txstart",		"received xon, start xmit"	},
+
+#define RSINTR_L3_TIMEOUT
+        { "rsintr.l3.timeout",		"siop = 0x%x"			},
+
+#define RSINTR_L3_QENABLE
+        { "rsintr.l3.qenable",		"qenable"			},
+
+#define RSINTR_L3_SPECIAL
+        { "rsintr.l3.special",	"special char. c=0x%x, rcsr=0x%x"	},
+
+#define RSINTR_L3_THROTTLE
+        { "rsintr.l3.throttle",	"throttling back, about to overflow ring"},
+
+/*
+ * txintr
+ */
+
+#define TXINTR_L3_ENTRY
+        { "txintr.l3.entry",		"siop = 0x%x"			},
+
+#define TXINTR_L3_EXIT
+        { "txintr.l3.exit",		"line %d"			},
+
+/*
+ * mintr
+ */
+
+#define MINTR_L3_ENTRY
+        { "mintr.l3.entry",	"siop=0x%x, msvr=0x%x, mcr=0x%x"	},
+
+#define MINTR_L3_EXIT
+        { "mintr.l3.exit",		"line %d"			},
+
+#define	MINTR_L3_CD_WAKEUP
+	{ "mintr.l3.cd_wakeup",		"CD high (or carrier) wakeup"	},
+
+#define	MINTR_L3_CD_UNHANGUP
+	{ "mintr.l3.cd_unhangup",	"CD high, send M_UNHANGUP"	},
+
+#define MINTR_L3_CDLOW
+        { "mintr.l3.nocd",		"CD low"			},
+
+#define MINTR_L3_CD
+        { "mintr.l3.cd",		"CD went high"			},
+
+#define	MINTR_L3_M_HANGUP
+	{ "mintr.l3.m_hangup",		"send M_HANGUP"			},
+
+#define MINTR_L3_CTSHIGH
+        { "mintr.l3.ctshigh",		"CTS high"			},
+
+#define MINTR_L3_TXSTART
+        { "mintr.l3.txstart",		"start transmitting"		},
+
+#define MINTR_L3_CTSLOW
+        { "mintr.l3.ctslow",		"CTS low"			},
+
+#define MINTR_L3_TXSTOP
+        { "mintr.l3.txstop",		"stop transmitting"		},
+
+#define MINTR_L3_NOCD
+        { "mintr.l3.nocd",		"no CD"				},
+
+#define MINTR_L3_DDSR
+        { "mintr.l3.ddsr",		"change in DSR"			},
+
+#define MINTR_L3_DCTS
+        { "mintr.l3.dcts",		"change in CTS"			},
+
+/*
+ * istart
+ */
+#define ISTART_L1_ENTRY
+        { "istart.l1.entry",		"siop=0x%x"			},
+
+#define ISTART_L1_EXIT
+        { "istart.l1.exit",		"line %d"			},
+
+/*
+ * istop
+ */
+#define ISTOP_L1_ENTRY
+        { "istop.l1.entry",		"siop=0x%x"			},
+
+#define ISTOP_L1_EXIT
+        { "istop.l1.exit",		"line %d"			},
+
+/*
+ * sendbreak
+ */
+#define SENDBREAK_L1_ENTRY
+        { "sendbreak.l1.entry",		"line %d"			},
+
+#define SENDBREAK_L1_EXIT
+        { "sendbreak.l1.exit",		"line %d"			},
+
+/*
+ * endbreak
+ */
+#define ENDBREAK_L1_ENTRY
+        { "endbreak.l1.entry",		"line %d"			},
+
+#define ENDBREAK_L1_EXIT
+        { "endbreak.l1.exit",		"line %d"			},
+
+/*
+ * iocput
+ */
+
+#define IOCPUT_L1_ENTRY
+        { "iocput.l1.entry",		""				},
+
+#define IOCPUT_L1_EXIT
+        { "iocput.l1.exit",		"line %d"			},
+
+#define IOCPUT_L2_ENQUEUE
+        { "iocput.l2.enqueue",		"enqueued IOCTL 0x%x"		},
+
+#define	IOCPUT_L2_RUN
+	{ "iocput.l2.ioctl",		"running IOCTL 0x%x"		},
+
+/*
+ * chip dump trace routines
+ */
+
+#define CHIP_L4_DUMP1
+        { "chip.l4.dump1",	"ccr=0x%x, ccsr=0x%x, srer=0x%x"	},
+
+#define CHIP_L4_DUMP2
+        { "chip.l4.dump2",	"cor1=0x%x, cor2=0x%x, cor3=0x%x"	},
+
+#define CHIP_L4_DUMP3
+        { "chip.l4.dump3",	"gsvr=0x%x, srsr=0x%x, gscr=0x%x"	},
+
+#define CHIP_L4_DUMP4
+        { "chip.l4.dump4",	"srcr=0x%x, mcr=0x%x, msvr=0x%x"	},
+
+#define CHIP_L4_DUMP5
+        { "chip.l4.dump5",	"rdcr=0x%x, rcsr=0x%x, rtpr=0x%x"	},
+
+#define CHIP_L4_DUMP6
+        { "chip.l4.dump6",	"schr1=0x%x, schr2=0x%x, srsr=0x%x"	},
+
+#define CHIP_L4_DUMP7
+        { "chip.l4.dump7",	"mcor1=0x%x, mcor2=0x%x, car=0x%x"	},
+
+/*
+ * misc. events
+ */
+#define TIME_SLICE
+        { "time.slice",		"time.tv_sec=%ld, time.tv_usec=0x%x"	},
+
+#define MUTEX_WAIT1
+	{ "mutex.wait1",	"line %d., ntot %d., tot time %d."	},
+
+#define MUTEX_WAIT2
+	{ "mutex.wait2",	"min_wait %d., max_wait %d."		},
+};
+
+/*
+ * Event header structure
+ * We need to know the start and end of the data segment.  With solaris 2,
+ * _etext and _end are set to the kernel's values rather than our module's
+ * because the runtime linker resolves the references.  The best we can
+ * do is to guarantee that we've included all the data in this module
+ * by using the fact that data is between the text and bss hence
+ * the funniness below.
+ */
+#if defined(SUNOS5)
+static void ___atextfcn(){}
+static int ___abssvariable;
+
+struct eventhdr eventhdr = {
+	event_tab,				
+	sizeof (event_tab) / sizeof (event_tab[0]),
+	(caddr_t)___atextfcn,
+	(caddr_t)&___abssvariable
+};
+#elif defined(SUNOS4) && defined(__GNUC__)
+/*
+ * Event header structure
+ */
+    /*
+     * GNU C 2.7.2 places strings into text area (because
+     *  they are read-only.  The 'data' segment referred to
+     *  in the eventhdr structure should cover both initialized
+     *  data and strings.
+     */
+extern int __gnu_compiled_c;
+extern char edata[];		/* end initialized data addr of this module */
+struct eventhdr eventhdr = {
+	event_tab,				
+	sizeof (event_tab) / sizeof (event_tab[0]),
+	(caddr_t) &__gnu_compiled_c,
+	(caddr_t) edata,
+};
+
+#elif defined(SUNOS4)
+
+extern char etext[];		/* starting data address for this module */
+extern char edata[];		/* end initialized data addr of this module */
+struct eventhdr eventhdr = {
+	event_tab,				
+	sizeof (event_tab) / sizeof (event_tab[0]),
+	(caddr_t) etext,
+	(caddr_t) edata,
+};
+
+#endif		/* defined(SUNOS4) */
+
+#endif		/* XXTRACE */

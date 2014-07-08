@@ -1,0 +1,65 @@
+#!/bin/sh
+#
+# This is a D (Distribution) generator for the Multiport 420SJ Driver
+#
+
+#	created: 10/12/1992
+#	sccs info: @(#)D.420SJ	1.1 1 08 Feb 1993
+
+PRODUCT="Multiport Model 420SJ"
+PRODUCT_FAMILY="Multiport Model 420SJ"
+PRODUCT_ABBREV="420SJ"
+# determine machine type from OS string in /vmunix
+/usr/bin/egrep SunOS /vmunix > /dev/null 2>&1
+stat=$?
+if [ $stat -eq 0 ] ; then
+    MACHINE_TYPE=sun
+else
+    /usr/bin/egrep OS/MP /vmunix > /dev/null 2>&1
+    stat=$?
+    if [ $stat -eq 0 ] ; then
+        MACHINE_TYPE=solb
+    else
+        MACHINE_TYPE=generic
+    fi
+fi
+VERSION="`cat VERSION`"
+MACHINE='SPARC Workstation'
+COPYR_NAME="Aurora Technologies, Inc."
+CO_FULL_NAME="Aurora Technologies, Inc."
+CO_FULL_ESC_NAME='Aurora Technologies, Inc\\.'
+CO_NAME="Aurora Technologies"
+CO_SHORT_NAME="Aurora"
+CO_CAPS_NAME="AURORA"
+CO_PHONE="617-290-4800"
+driver_id="`/usr/ccs/bin/what $1 |		\
+		/bin/sed -n 's/^[^[]*\[\([^]]*\)\].*$/\1/p'`"
+driver_name="`echo "$driver_id" | /bin/awk '{print $1}'`"
+root_needed="`du -s REL | /bin/awk '{print $1 + 20}'`"
+date_now="`/bin/date`"
+dt_sccs=`/bin/date '+%y/%m/%d'`
+
+echo -n "editing $2 ..."
+/bin/sed -e 's/INSERT_HERE_PRODUCT/'"$PRODUCT"'/
+s/INSERT_HERE_PROD_ABBREV/'"$PRODUCT_ABBREV"'/
+s/INSERT_HERE_DRIVER_NAME/'"$driver_name"'/
+s/INSERT_HERE_COPYR_NAME/'"$COPYR_NAME"'/
+s/INSERT_HERE_CO_FULL_NAME/'"$CO_FULL_NAME"'/
+s/INSERT_HERE_CO_FULL_ESC_NAME/'"$CO_FULL_ESC_NAME"'/
+s/INSERT_HERE_CO_NAME/'"$CO_NAME"'/
+s/INSERT_HERE_CO_SHORT_NAME/'"$CO_SHORT_NAME"'/
+s/INSERT_HERE_CO_CAPS_NAME/'"$CO_CAPS_NAME"'/
+s/INSERT_HERE_CO_PHONE/'"$CO_PHONE"'/
+s/INSERT_HERE_ROOT_NEEDED/'"$root_needed"'/
+s/INSERT_HERE_MACHINE_TYPE/'"$MACHINE_TYPE"'/
+s/INSERT_HERE_MACHINE/'"$MACHINE"'/
+s/INSERT_HERE_DATE/'"$date_now"'/
+s=INSERT_HERE_DT_SCCS='"${dt_sccs}"'=
+s/INSERT_HERE_PROD_LV/'"$PRODUCT"'/
+s=INSERT_HERE_PROD_FAMILY='"$PRODUCT_FAMILY"'=
+s/INSERT_HERE_SUPPORT_ID/'"$driver_id"'/
+s/INSERT_HERE_VERSION/'"$VERSION"'/
+s/INSERT_HERE_DRIVER_ID/'"$driver_id"'/' < $3 > $2
+
+echo done
+

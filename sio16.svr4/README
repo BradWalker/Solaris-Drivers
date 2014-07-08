@@ -1,0 +1,467 @@
+$Header: /vol/sources.cvs/dev/sio16.svr4/README.staging,v 1.1.2.6 1996/10/28 21:51:35 bkd Exp $
+
+Brad Walker (bwalker@auratek.com), October 28, 1996
+
+This README describes release 5.13 of sio16, the 
+Solaris 2 driver for the CD180/CD1865 series of boards.
+
+This release was based on 5.11b.  Note that there never was any
+release called 5.12.  The deltas described herein are with
+respect to 5.11b.
+
+Notice
+------
+This is a general release.  It may be distributed freely.
+
+CVS information
+---------------
+Modules:		sio16.svr4, xxtrace.svr4
+Parent branch tag:	--main tree--
+Branch base tag:	BASE_SPARC_SOS5_SIO16_5_13
+Branch tag:		BR_SPARC_SOS5_SIO16_5_13
+Release tag:		REL_SPARC_SOS5_SIO16_5_13
+
+Purpose
+-------
+
+[5.13]: The primary purpose of the 5.13 release is to fix a problem
+with forceload on UltraSPARC systems running Solaris 2.5.1.  Also,
+several bugs have been fixed and performance has been improved.
+
+[5.13qa3]: The primary purpose of the 5.13qa3 release is to fix 
+the DDI_SUSPEND/DDI_RESUME problem under Solaris 2.5
+
+[5.13qa2]: The primary purpose of the 5.13qa2 release is to fix 
+some problems that were discovered in the QA cycle.  Also, a great
+deal of engineering work has been done on the receive half of the
+driver (performance and functionality improvements).
+
+[5.13qa1]: The primary purpose of the 5.13qa1 release is to fix a
+problem with forceload on UltraSPARC systems running Solaris 2.5.1.
+In addition, this release switches to the new, standard Solaris 2
+xxtrace, and fixes many other deficiencies in the driver.  Also, it is
+the first release to include drat, and it is the first release to have
+a proper README.staging (what you're looking at).
+
+Known problems/Limitations/Release notes
+----------------------------------------
+
+    General
+    -------
+
+    Async driver (sio16)
+    --------------------
+
+    + [5.13qa2]: 1600SE Revision B hardware not fully supported
+
+    The 1600SE Revision B hardware is not fully supported by this
+    driver (and probably has never been fully supported).  It is not
+    believed that any Rev. B hardware is in the field.
+
+    The problem is that the software cannot distinguish between the
+    1600SE Rev. A and the 1600SE Rev. B.  Unfortunately, the two
+    boards have their DTR and RTS pins wired in opposite ways.
+    Because the Rev. A hardware is in the field, the driver assumes
+    that a board that looks like either a Rev. A or B is actually a
+    Rev. A board.  This has the side effect that Rev. B hardware will
+    not quite work properly.
+
+    Specifically, the DTR and RTS pins will behave backwardly.  If the
+    user uses the Aurora "async modem adapters", the problem will be
+    solved.
+
+    This was reported as bug 0000000141.
+
+    + [5.13qa1]: termiox ioctls are not supported
+
+    This version of the driver does not support the termiox ioctls.
+    This should not be a problem for most users, as these ioctls are
+    somewhat obscure.  It should be noted that, at this time, *NO*
+    Aurora products support these ioctls.
+    
+    + [5.13qa1]: high level interrupts are not supported
+
+    This version of the driver does not support high level
+    interrupts.  This means that, for example, SBus interrupts level 6
+    and 7, which may be selected using the 'sio16.conf' file, will not
+    work on sun4m machines.  This should not be a problem for most
+    users, as the default configuration sets the interrupt level at 5.
+    Also, it should be noted that, at this time, *NO* Aurora products
+    support high level interrupts.
+
+    + [5.13qa1]: only first 16 boards have summary statistics
+
+    The definition of SIO_STATS_CHK ioctl allows only 16 boards for
+    summary statistics.  The driver will present these 'check'
+    statistics for the first 16 units (board instances 0-15).  Boards
+    with higher instance numbers will not have summary statistics
+    recorded.
+
+    This should not be a problem for most users, as users rarely have
+    more than 16 boards in a single system.  However, even if they do,
+    it is only the summary statistics (the ones retrieved by
+    SIO_STATS_CHK -- e.g. from 'mset -statschk') that are affected;
+    regular, per-line statistics will function properly on all
+    boards.
+
+    + [5.13qa1]: some Solaris 2.5 extended baud rates are not
+      supported
+
+    The currently shipping 1600SE hardware (Rev. C) uses an 11.0592
+    MHz clock.  The CL-CD180 uses this clock to generate its baud
+    rate.  Some of the high-end baud rates (153600, 307200, and
+    460800) do not divide properly into 11.0592 MHz.  The baud rates
+    are therefore illegal.  Attempting to use them will leave the baud
+    rate unchanged.
+
+    Note that although the driver "supports" the Solaris 2.5 higher
+    baud rates (57600-460800), the hardware is not officially capable
+    of operating at these speeds.  The CL-CD180 is not specified to
+    operate much above 64 kbps, and the transceivers on the 1600SE
+    will probably start to fail at about 120 kbps.
+
+    + [5.13qa1]: Solaris 2.5 DDI_SUSPEND/DDI_RESUME functions are not
+      implemented
+
+    The Solaris 2.5 DDI_SUSPEND and DDI_RESUME functions are not
+    implemented in this release of the driver.  This means that users
+    *may* not be able to suspend their machine (using the
+    sys-suspend(1M) command, or the power key).  The driver will
+    refuse to allow the system to be suspended.
+
+    + [5.13qa1]: differing input and output baud rates are not
+      supported
+
+    This driver will not support operation with different input and
+    output baud rates.  If an application attempts to configure a port
+    with input and output baud rates that are not the same, the driver
+    will ignore the new input baud rate and use only the output baud
+    rate. 
+
+    This should not be a problem for most users, as most applications
+    involve using the same baud rate for input and output.  If
+    differing input and output baud rates are needed, the customer can
+    use two separate ports: one configured for input, and the other
+    for output.
+
+    Also, it should be noted that, at this time, *NO* Aurora products
+    support differing input and output baud rates.
+
+    XXTRACE (xxtrace.svr4)
+    ----------------------
+
+Change descriptions
+-------------------
+
+    Internal
+    --------
+
+    + [5.13]: the AURAdas8 packaging files have been removed
+
+    The files needed to create the AURAdas8 (drat) package have been
+    removed.  This functionality will now live in the diag180
+    repository. 
+
+    + [5.13qa2]: modem/flow control line internal mechanism changed
+
+    The old driver used a combinations of flags and the value of the
+    port number (e.g. >= 0xc && <= 0xf) to determine how the modem
+    and flow control lines were wired up.  This was *very* confusing,
+    and led to several bugs.
+
+    I've restructured the driver to use a single variable for each
+    logical signal (DTR, RTS, CTS, CD, and DSR) to describe where it
+    is attached to the chip.  These variables are initialized at board
+    attach time.  This makes it much easier to add new configurations
+    (e.g. the new 1600PCI board).
+
+    + [5.13qa2]: modem interrupt internal mechanism changed
+
+    The code in the modem interrupt routine used to have two cases:
+    one for when CD was connected to DSR, the other for when it was
+    connected to CTS (the "high" ports).  As part of the
+    above-mentioned changes, these two cases have been simplified and
+    folded into one.
+
+    + [5.13qa2]: receive mechanism rewritten
+
+    The old driver had a very ugly design in the rsrv routine to drain
+    the receive data ring.  Among other problems, it would fragment
+    the data into small mblks, it would queue data in the local
+    receive queue, it would not recover gracefully when allocb()
+    failed, and it would sometimes turn receive flow control off when
+    it shouldn't.  These flaws could lead to data loss or poor
+    performance.
+
+    I've completely re-written the receive half of the driver.  Data
+    are left in the receive ring until a mblk is available, and the
+    receive flow control is now based on a low water mark.
+
+    + [5.13qa1]: code reformatted to Aurora standards
+
+    I reformatted the code to meet the Aurora coding standards (4
+    space indentation, mandatory opening and closing braces after all
+    conditionals, boolean expressions only (no arithmetic expressions)
+    with conditionals, fully ANSIfied code, complete and proper
+    prototypes, standard Aurora copyright boilerplate, RCS ids and
+    copyrights, no long lines).
+
+    + [5.13qa1]: extraneous includes removed
+
+    The driver source contained many unnecessary includes.  They have
+    been removed, and the includes pared down to the bare minimum.
+    This is to increase DDI/DKI compliance.
+
+    + [5.13qa1]: new version mechanism
+
+    The old driver derived a version number from the sccsid of the
+    sio16_osdep.c module.  This was a bizarre way of doing things.
+
+    The version is now stored in the 'version.h' file.
+
+    + [5.13qa1]: new makefile setup
+
+    The makefile setup has been changed to mimic that of ACS.  This
+    will allow parallel builds under SPARC and Solaris x86 (in
+    preparation for the PCI board).  In addition, a new set of targets
+    have been added: release, transfer, image, id, and clean.
+
+    + [5.13qa1]: driver uses ddi_soft_state
+
+    The driver now uses the ddi_soft_state mechanism to store the
+    per-board information.  The eliminates the restriction on the
+    maximum number of boards.  However, there are still other
+    limitations (see above).
+
+    + [5.13qa1]: support for SunOS 4 removed from source code
+
+    The old driver had the remnants of support for SunOS 4 in the
+    source.  This has been expunged.
+
+    + [5.13qa1]: hardware definitions moved to cd18x.h
+
+    All of the hardware definitions of the Cirrus Logic
+    CL-CD180/1864/1865 have been moved out of sio16.h and into cd18x.h.
+
+    General
+    -------
+
+    + [5.13]: the AURAdas8 package is no longer on the shipping medium
+
+    The qa versions of 5.13 included a version (1.0.2qaX) of diag180,
+    the Aurora diagnostics for the CL-CD180/1865, in a package called
+    'AURAdas8'.
+
+    We decided that it was confusing to have the two, conflicting
+    packages on the same diskette.  If a user attempted to install
+    both packages, they would get a failure on the installation of the
+    second package.
+
+    In addition, coupling the release of AURAdas8 to the release of
+    the driver made it more cumbersome to QA and release.
+
+    So, we decided to ship the two packages on separate media.
+
+    + [5.13qa2]: bug fix: xxtrace saw only first board
+
+    In the old driver, xxtrace only saw the first board.  This was due
+    to a bug in the attach code that only initialized xxtrace for the
+    first board attached.  This has been fixed.
+
+    + [5.13qa2]: bugfix: 'mset -statsreset' would crash the system
+
+    The old driver had a bug in the xxtrace code for the
+    SIO_STATS_RST_ALL ioctl (used by 'mset -statsreset').  It used 0
+    as the device pointer.  This has been fixed.
+
+    + [5.13qa1]: driver compiled with Sun SPARCompiler C 4.0
+
+    Previous releases of the driver were compiled with the Sun
+    SPARCompiler C 2.0.1 under Solaris 2.3.  Unfortunately, this
+    combination of compiler and operating system causes the driver to
+    hang UltraSPARC systems at reboot time.
+
+    Therefore, this release will be built with the Sun SPARCompiler C
+    4.0 on a Solaris 2.3 machine.
+
+    + [5.13qa1]: included drat (diag180) into the release package 
+
+    Previous releases of the driver did not include a diagnostic tool.
+    This release includes a separate package called 'AURAdas8' that
+    has a self-contained diagnostic called 'drat'.
+
+    + [5.13qa1]: removed Readme from distribution
+
+    Previous releases of the driver contained a Readme file.  This
+    Readme had not been kept up to date, so it has been removed from
+    the distribution.
+
+    In addition, the postinstall script (run at pkgadd time) would ask
+    the user if they wanted to read this file.  This query has been
+    removed.
+
+    + [5.13qa1]: new standard xxtrace
+
+    This release switches to the new, standard Solaris 2 xxtrace.
+    This xxtrace has many features and bugfixes in it.  The biggest
+    feature is the timestamp capability.
+
+    + [5.13qa1]: only xxtrace driver is shipping
+
+    Previous releases of this software contained two versions of the
+    driver: one with xxtrace compiled in and one without.  By default,
+    the non-xxtrace version was installed into the kernel.
+
+    This release of the software contains ONLY the driver with
+    xxtrace.  This is to try to clear up some confusion, make the
+    build process simpler, and make it easier to trace problems that
+    may happen on the fly.  The overhead of a deactivated xxtrace is
+    quite minimal.
+
+    + [5.13qa1]: UltraSPARC compatible filesystem packaging
+
+    The software used to be distributed in "pkgadd stream format".
+    This format is incredibly slow to build and slow to load.
+
+    Therefore, starting with this release, the distribution will be in
+    filesystem format.  In addition, the parameters of this filesystem
+    make it mountable on UltraSPARC machines.
+
+    + [5.13qa1]: updated copyrights
+
+    All copyrights have been updated to include 1996.
+
+    Async driver (sio16)
+    --------------------
+
+    + [5.13qa3]: driver 'modinfo' tag line changed
+
+    The description of the driver used to look like:
+	aurora 16 port serial
+
+    This is ugly and not very descriptive.  The new modinfo
+    tag line looks like:
+	Aurora CL-CD180/1865 driver
+
+    This is a little more in keeping with how Sun uses their
+    module descriptions.
+
+    + [5.13qa3]: DDI_SUSPEND/DDI_RESUME now fails more gracefully
+
+    The old driver did not protect properly against the
+    DDI_SUSPEND/DDI_RESUME function.  The driver would allow the
+    system to SUSPEND, but it would refuse to resume.  This would
+    cause a system panic when the system tried to resume.
+
+    The driver will now refuse to suspend.
+
+    + [5.13qa2]: driver displays a more comprehensive load line
+
+    The old driver displayed a load line like:
+
+	Aurora 1600SE board:X, CD180-Z, intr I, 5.13qa1
+
+    Where X was the instance, I was the SBus interrupt level, and Z
+    was the revision of the chip (either A, B, or D), based on the
+    contents of the gfrcr register.
+
+    Now, the load line looks like this:
+
+	Aurora 1600SE board:X, Y-Z S MHz, intr I, 5.13qa2
+
+    Where Y is the chip type (either "CL-CD180", "CL-CD1864", or
+    "CL-CD1865"), Z is the chip revision (A, B, or C for the CL-CD180,
+    A for the CL-CD1864, or A for the CL-CD1865), and S is the board
+    speed (either 11.0592 MHz for the 1600SE Rev. C, or 14.7456 MHz
+    for the 1600SE Rev. A).
+
+    Note that it appears that Cirrus released the CL-CD180 Rev. D
+    before Rev. C, and that both have the same internal version code.
+    This means that boards with Rev. D CL-CD180s in them will report
+    Rev. C CL-CD180s instead.  Note also that the old driver reported
+    both Rev. C and D CL-CD180s as Rev. D.
+
+    The purpose of all of this is to try to help distinguish the board
+    type and revision to users.  Please see bug id 0000000142.
+
+    + [5.13qa2]: driver fails more gracefully when encountering an old
+      board
+
+    If the driver is installed on a system with an old board, whose
+    name is still 'sio16' but whose model is not '1600se', then it
+    prints out a warning message that includes the value of the model
+    property (e.g. '1600sm').  This should make the failure a little
+    easier to deal with.
+
+    + [5.13qa2]: input hardware flow control bugs fixed
+
+    The old driver had a bug where hardware input flow control would
+    fail when the receiving channel was simultaneously transmitting.
+    The problem was that when the driver got data to transmit, it
+    would always turn on *all* interrupts (including receive).  This
+    would defeat the hardware input flow control mechanism (on
+    configurations that used the built-in DTR hardware input flow
+    control).
+
+    The new driver is much more careful about writing to the interrupt
+    enable register (SRER).  It keeps a cached value of SRER and does
+    anding and oring with this cached copy (to decrease the number of
+    chip cycles).
+
+    In addition, the old driver used to always re-activate data
+    reception after rsrv was called, even if rsrv didn't drain
+    anything out of the receive ring.  This created a nasty race
+    condition that could lead to loss of data.
+
+    rsrv now uses a low-water mark mechanism in order to decide when
+    to re-activate data reception.
+
+    + [5.13qa1]: removed support for all previous revisions of the
+      products. 
+
+    The driver now only supports the 1600SE Rev. C hardware.  All
+    support for previous versions has been removed.  This means that,
+    among other things, this driver will not support the 1600S or the
+    1600SM.
+
+    + [5.13qa1]: transparent ioctls are now fully implemented
+
+    The transparent ioctl code from ACSA has been lifted and placed
+    into this driver.  This means that all ioctls are now supported in
+    their transparent form.
+
+    + [5.13qa1]: Solaris 2.5 extended baud rates supported
+
+    Solaris 2.5 introduced extended baud rates (above 38400).  This
+    driver supports these (even though it is built on a Solaris 2.3
+    system).  There are caveats, however.  Please see "Known problems"
+    (above) for details.
+
+    + [5.13qa1]: changed name of close_timeout to sio16_close_timeout
+
+    The variable 'close_timeout' has been renamed
+    'sio16_close_timeout'.  This is an attempt to avoid name conflicts
+    with other drivers.
+
+    Note that this variable is of questionable use, and it will
+    probably be removed in a future release of this driver.
+
+    + [5.13qa1]: ports initialized to "ttymodes" at first open
+
+    The old driver initialized the parameters of a port to 9600 baud,
+    7e1, IXON | IXOFF at open time.  This is not really Solaris 2
+    friendly.  Solaris 2 provides the "ttymodes" property (see the
+    file /kernel/drv/options.conf).  The driver now initializes the
+    port to the values from the "ttymodes" property.
+
+    + [5.13qa1]: improved error recovery in attach
+
+    The old driver had some resources leaks in the attach code; if the
+    attach failed, then some resources would be left unaccounted-for.
+
+    This release of the driver has a newly restructured attach routine
+    that will recover more gracefully from failures.
+ 
+
+    XXTRACE (xxtrace.svr4)
+    ----------------------

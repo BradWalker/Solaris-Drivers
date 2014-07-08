@@ -1,0 +1,89 @@
+$Header: /vol/sources.cvs/dev/sio16.svr4/TODO,v 1.6.2.3 1996/10/23 16:11:42 bkd Exp $
+
+		  1600SE Solaris 2 Driver To-do List
+			     Brad Walker
+			     Bjoren Davis
+		      Aurora Technologies, Inc.
+			     June 7, 1996
+
++ cache values for things like some of the COR and MCOR registers.
+
++ re-write receive process to involve no high level calls in ISR;
+  place all data and status pairs directly into a ring buffer, and
+  process them in rsrv() routine.  This leaves two possible data loss
+  points: one in the ISR (placing data into the ring), and another in
+  the chip FIFO itself.  This would also allow a more standard method
+  of handling exceptions (parity, frame errors) in the rsrv routine.
+
++ re-structure receive-half to work more consistently with an 'icto'
+  type variable.  Here's how: at the low level, use icto to program
+  the chip's true icto -- that is, how long it waits with data in the
+  buffer and no new data arriving.  Also use the icto to program the
+  high water mark in the chip's FIFO.
+
+  Next, use icto at the high level to determine the water mark used in
+  the interrupt routine to qenable the queue.  We could use a magic
+  value of icto (e.g. '0') that would indicate "always qenable".
+
++ borrow open() code from ACSA to support cu/term simultaneous opens
+  correctly 
+
++ switch to macrofied chip access
+
++ figure out how to release a Solaris 2.3/2.4 and Solaris 2.5/2.5.1
+  versions of driver from same source simultaneously
+
++ eliminate all board maxima (including in the statistics mechanism)
+
++ implement 'mset -flush' mechanism
+
++ implement 'mset -icto' mechanism
+
++ cache cflag/iflag to determine whether or not param changes are
+  necessary (a la ACSA)
+
++ fix? hangup detection (doesn't seem to work with kermit)
+
++ implement split input and output baud rates
+
++ implement termiox ioctls
+
++ add support for DDI_SUSPEND/DDI_RESUME in the detach/attach
+  routines
+
+------------------------------------------------------------------------------
+Things that have been completed:
+
++ use xxtrace as standard driver.  Modify sourceme to simplify xxtrace
+  loading whatever. 
+
++ borrow transparent ioctl code from ACSA to properly support
+  transparent ioctls
+
++ switch to new version mechanism
+
++ use UltraSPARC-compatible packaging
+
++ add 'make id' target
+
++ add a 'README.staging'
+
++ move to standard XXTRACE
+
++ use 'ttymodes' property to initialize termio stuff
+
++ switch to ddi_soft_state
+
++ remove support for old boards
+
++ ansify properly
+
++ add Solaris 2.5 extended baud rates
+
++ remove 'Readme' from shipping package
+
++ remove question about seeing 'Readme' from postinstall
+
++ remove 'AURAsio16/sio16' and 'AURAsio16/sio16xx' from shipping package
+
++ cache values for things like the IER (also called SRER)

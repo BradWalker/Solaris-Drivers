@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# Now it on a diskette
+#
+#	sccs info: @(#)$Header: /vol/sources.cvs/dev/sio16.svr4/L,v 1.3 1995/08/15 23:13:43 bkd Exp $
+#
+# L manufacturing script
+#
+# use device name (e.g. /dev/rst0) or 'tape' as argument
+if [ "$1" = "" ] ; then
+    DEV=/dev/rfd0c
+else
+    DEV=$1
+fi
+if [ "$DEV" = "tape" ] ; then
+    DEV=/dev/rst0
+fi
+
+cd REL
+dd bs=18k if=AURAsio16.disk.image of=$DEV
+if [ "$DEV" = /dev/rfd0c ] ; then
+    eject
+fi

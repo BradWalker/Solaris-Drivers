@@ -1,0 +1,37 @@
+# @(#)$Header: /vol/sources.cvs/dev/sio16.svr4/sourceme,v 1.4 1996/09/20 21:24:53 bkd Exp $
+# This source file contains aliases for the root user for performing
+# various standard debug functions.  These commands should be executed
+# from the driver directory (i.e. /opt/AURAsio16).
+#
+# This source file should be sourced by root user in a csh environment.
+#
+
+# add /opt/AURAsio16 to path
+set path=( /usr/sbin /opt/AURAsio16 $path )
+
+# change to driver directory
+alias	1600	cd /opt/AURAsio16
+
+# unload
+alias	ul	rem_drv sio16
+
+# load
+alias	ld	add_drv -m \'\* 0666 root sys\' sio16
+
+# enable all xxtrace events
+alias	xa	./xxtrace -event .l1. .l2. .l3. -port 0:all 1:all 2:all 3:all -start 40000 -timestamp enable
+
+# enable all events on a particular port
+alias	xb	./xxtrace -event .l1. .l2. .l3. -noevent intr.l3 -event rxintr txintr mintr rsintr -start 40000 -timestamp enable -port
+
+# clear events in xxtrace buffer
+alias	xc	./xxtrace -clear
+
+# print event buffer to stdout
+alias	xp	./xxtrace -dump /tmp/xx\; ./prtrace -timestamp -file /tmp/xx
+
+# show all events enabled
+alias	xs	./xxtrace -show
+
+# reset and disable xxtrace
+alias	xr	./xxtrace -reset

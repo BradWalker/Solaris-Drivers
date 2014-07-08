@@ -1,0 +1,141 @@
+#
+# @(#)$Header: /vol/sources.cvs/dev/sio16.svr4/m.sparc-sos5,v 1.1.2.1 1996/10/23 16:12:30 bkd Exp $
+#
+# $Log: m.sparc-sos5,v $
+# Revision 1.1.2.1  1996/10/23 16:12:30  bkd
+# Removed all traces of drat (diag180 a/k/a AURAdas8)
+# from the build process
+#
+# Revision 1.1  1996/09/20 21:27:46  bkd
+# Added Files:
+# 	cd18x.h copyright.AURAdas8 depend depend.AURAdas8 m.sparc-sos5
+# 	makefile pkginfo.sparc pkginfo.sparc.AURAdas8
+# 	prototype.AURAdas8 version.h
+# Removed Files:
+# 	Makefile
+#
+#
+BASEDIR=..
+DRVFLGS	= -D_KERNEL -DSUNOS5
+XXTRACEDIR=$(BASEDIR)/../xxtrace.svr4
+#CFLAGS = -O -I$(BASEDIR) -I$(XXTRACEDIR) -DXXTRACE -v
+CFLAGS = -O -I$(BASEDIR) -I$(XXTRACEDIR) -DXXTRACE
+
+SOURCES.C = sio16.c sio16_osdep.c
+SOURCES.H = sio16.h sio16_ioctl.h version.h
+PKG_SOURCES = prototype postinstall preremove copyright depend
+MSET_SOURCES = mset.c
+TTYSOFTCAR_SOURCES = ttysoftcar.c
+SOURCES = $(SOURCES.C) $(SOURCES.H) $(PKG_SOURCES)		\
+	$(MSET_SOURCES) $(TTYSOFTCAR_SOURCES)
+
+OBJECTS=$(SOURCES.C:.c=.o) event.o $(XXTRACEDIR)/$(OS)/xxtracelib.o
+
+default: all
+
+all:	$(SOURCES) sio16 mset ttysoftcar
+
+#### source file rules
+
+$(SOURCES):
+	for FILE in $(SOURCES); do \
+		test -h $$FILE || ln -s $(BASEDIR)/$$FILE .; \
+	done
+
+# This one is special
+pkginfo:
+	test -h pkginfo || ln -s $(BASEDIR)/pkginfo.sparc pkginfo
+
+cflow:	sio16.cflow sio16.cflow-r
+
+sio16.cflow: sio16.c
+	cflow $(CFLAGS) $(DRVFLGS) sio16.c > sio16.cflow
+
+sio16.cflow-r: sio16.c
+	cflow -r $(CFLAGS) $(DRVFLGS) sio16.c > sio16.cflow-r
+
+mset:	mset.c
+	$(CC) -o mset $(CFLAGS) mset.c
+
+ttysoftcar: ttysoftcar.c
+	cc -o ttysoftcar $(CFLAGS) ttysoftcar.c
+
+event.h: event.c
+	rm -f event.h
+	grep define event.c > event.h
+
+event.c: $(BASEDIR)/event.in $(XXTRACEDIR)/Devent
+	rm -f event.c
+	$(XXTRACEDIR)/Devent $(BASEDIR)/event.in event.c
+
+sio16.o: sio16.c sio16.h sio16_ioctl.h event.h $(XXTRACEDIR)/xxtrace.h
+	$(CC) -c -o sio16.o $(CFLAGS) $(DRVFLGS) $(XXTRACE) sio16.c
+
+event.o: event.c
+	$(CC) -c -o event.o $(CFLAGS) $(DRVFLGS) $(XXTRACE) event.c
+
+sio16_osdep.o: sio16_osdep.c sio16.h sio16_ioctl.h version.h	\
+		event.h $(XXTRACEDIR)/xxtrace.h version.h
+	$(CC) -c -o sio16_osdep.o $(CFLAGS) $(DRVFLGS) $(XXTRACE) sio16_osdep.c
+
+sio16:	$(OBJECTS)
+	$(LD) -r -o sio16 $(OBJECTS)
+
+$(XXTRACEDIR)/$(OS)/xxtracelib.o: always
+	cd $(XXTRACEDIR); make
+
+$(XXTRACEDIR)/$(OS)/xxtrace: always
+	cd $(XXTRACEDIR); make
+
+$(XXTRACEDIR)/$(OS)/prtrace: always
+	cd $(XXTRACEDIR); make
+
+always:
+	@/bin/true
+
+release: release.AURAsio16
+
+release.AURAsio16: $(PKG_SOURCES) pkginfo sio16 sio16_ioctl.h mset	\
+		ttysoftcar	\
+		$(XXTRACEDIR)/$(OS)/xxtrace $(XXTRACEDIR)/$(OS)/prtrace
+	@ rm -rf REL/AURAsio16 etc kernel AURAsio16
+	@ mkdir -p AURAsio16 etc kernel/drv REL
+	@ cp -p $(BASEDIR)/sourceme mset ttysoftcar			\
+		$(XXTRACEDIR)/$(OS)/xxtrace $(XXTRACEDIR)/$(OS)/prtrace	\
+		sio16_ioctl.h					\
+		$(BASEDIR)/sysinfo AURAsio16
+	@ cp -p sio16 kernel/drv
+	@ cp -p $(BASEDIR)/path_to_inst $(BASEDIR)/iu.ap $(BASEDIR)/system etc
+	pkgmk -o -r `pwd` -d `pwd`/REL
+
+transfer:
+# (must be root)
+#
+	/usr/sbin/mkfs -F ufs /dev/rdiskette			\
+		2880 18 2 8192 1024 16 10 5 2048 t 0 -1 8 -1
+# transfer the AURAacs, AURAacsa, and AURAacss packages
+	pkgtrans REL /dev/diskette AURAsio16
+
+#
+# ID target:  This is meant to identify
+#  the environment in which the build is running.
+#
+#
+id:
+	@date
+	@echo "Build environment:"
+	@echo "OS=$(OS)"
+	-cc -V
+	-uname -a
+	-showrev -a
+	-showrev -p
+
+image:
+	rm -f REL/AURAsio16.disk.image REL/AURAsio16.stream		\
+			REL/AURAsio16.stream.Z
+	dd bs=18k if=/dev/rdiskette of=REL/AURAsio16.disk.image
+	compress REL/AURAsio16.disk.image
+	pkgtrans -s REL `pwd`/REL/AURAsio16.stream AURAsio16
+	compress REL/AURAsio16.stream
+
+depends: $(SOURCES) event.h

@@ -1,0 +1,766 @@
+/*
+ * Events 
+ *
+ * This file is a .h file even though it has initialized data because
+ * we want to this the only file that has to be editted to add new events.
+ *
+ * The driver is the only file which includes this file.
+ *
+ * The events are built into the driver so that the utilities xxtrace
+ * and printtrace are independent of the event name list.
+ *
+ * The first entry is not used.  The list must be terminated by a NULL.
+ */
+struct event event_tab[] = {
+	{ "NULL",			NULL				},
+
+/*
+ * * * Events for SERIAL PORTS
+ */
+
+/*
+ * open
+ */
+
+#define OPEN_L1_ENTRY	
+        { "open.l1.entry",		"\tq=0x%x\tflag=%d\tsflag=%d"	},
+
+#define OPEN_L1_EXIT
+        { "open.l1.exit",		"\tline %d"			},
+
+#define	OPEN_L2_SLEEP_CFHANG
+	{ "open.l2.sleep_cfhang",	"\tsleep on CF_HANG"		},
+
+#define OPEN_L2_SLEEP_INT
+        { "open.l2.sleep_int",		"\tsleep interrupted! line %d"	},
+
+#define	OPEN_L2_WAKEUP_CFHANG
+	{ "open.l2.wakeup_cfhang",	"\twakeup from CF_HANG sleep"	},
+
+#define OPEN_L2_1STOPEN
+        { "open.l2.1stopen",		"\tfirst open"			},
+
+#define OPEN_L2_EXCLUDE
+        { "open.l2.exclude",		"\talready exclusive open"	},
+
+#define OPEN_L2_DTR
+        { "open.l2.dtr",		"\traise DTR & RTS"		},
+
+#define OPEN_L2_MSR
+	{ "open.l2.msr",		"\tmsr=0x%x"			},
+
+#define	OPEN_L2_SLEEP_CD
+	{ "open.l2.sleep_cd",		"\tsleep on CD"			},
+
+#define OPEN_L2_WAKEUP_CD
+	{ "open.l2.wakeup_cd",		"\twakeup from CD sleep"	},
+
+#define	OPEN_L2_FIFO
+	{ "open.l2.fifo",		"\tFIFO set, FCR = 0x%x"	},
+
+/*
+ * close
+ */
+
+#define CLOSE_L1_ENTRY
+        { "close.l1.entry",		"\tq=0x%x\tflag=0x%x"		},
+
+#define CLOSE_L2_SLEEP
+        { "close.l2.sleep",	"\tlasttxmp 0x%x lastrxmp 0x%x flags 0x%x"},
+
+#define CLOSE_L2_WAKEUP
+        { "close.l2.wakeup",	"\tlasttxmp 0x%x lastrxmp 0x%x flags 0x%x"},
+
+#define CLOSE_L1_EXIT
+        { "close.l1.exit",		"\tline %d"			},
+
+#define CLOSE_L2_DTR	
+        { "close.l2.dtr",		"\tlower DTR & RTS"		},
+
+/*
+ * unhang
+ */
+
+#define UNHANG_L1_ENTRY
+        { "unhang.l1.entry",		"\tcfline=0x%x"			},
+
+#define UNHANG_L1_EXIT
+        { "unhang.l1.exit",		"\tline %d"			},
+
+/*
+ * wput
+ */
+
+#define WPUT_L1_ENTRY
+        { "wput.l1.entry",		"\tq=0x%x\tmp=0x%x"		},
+
+#define WPUT_L1_EXIT
+        { "wput.l1.exit",		"\tline %d"			},
+
+#define WPUT_L2_M_STOP	
+        { "wput.l2.m_stop",		"\tM_STOP"			},
+
+#define WPUT_L2_M_START
+        { "wput.l2.m_start",		"\tM_START"			},
+
+#define WPUT_L2_M_IOCTL
+        { "wput.l2.m_ioctl",		"\tM_IOCTL"			},
+
+#define WPUT_L2_SETBRK
+        { "wput.l2.setbrk",		"\tSETBRK ioc_cmd %d"		},
+
+#define	WPUT_L2_IOCTL
+	{ "wput.l2.ioctl",		"\tcall cfioctl 0x%x"		},
+
+#define WPUT_L2_M_FLUSH
+        { "wput.l2.m_flush",		"\tM_FLUSH"			},
+
+#define WPUT_L2_M_STOPI
+        { "wput.l2.m_stopi",		"\tM_STOPI"			},
+
+#define WPUT_L2_M_STARTI
+        { "wput.l2.m_starti",		"\tM_STARTI"			},
+
+#define WPUT_L2_M_DATA
+        { "wput.l2.m_data",		"\tM_BREAK, M_DELAY, or M_DATA"	},
+
+#define WPUT_L2_UNKNOWN
+        { "wput.l2.unknown",		"\tunknown stream msg=0x%x"	},
+
+/*
+ * wsrv
+ */
+
+#define WSRV_L1_ENTRY	
+        { "wsrv.l1.entry",		"\tq=0x%x"			},
+
+#define WSRV_L1_EXIT
+        { "wsrv.l1.exit",		"\tline %d"			},
+
+/*
+ * rsrv
+ */
+
+#define RSRV_L1_ENTRY	
+        { "rsrv.l1.entry",		"\tq=0x%x"			},
+
+#define RSRV_L1_EXIT
+        { "rsrv.l1.exit",		"\tline %d"			},
+
+#define	RSRV_L2_CANPUT
+	{ "rsrv.l2.canput",		"\tput message upstream!"	},
+
+#define	RSRV_L2_CANTPUT
+	{ "rsrv.l2.cantput",	"\tcannot put message upstream!"	},
+
+/*
+ * ioctl
+ */
+
+#define IOCTL_L1_ENTRY
+        { "ioctl.l1.entry",		"\tcfline=0x%x\tq=0x%x\tmp=0x%x"},
+
+#define IOCTL_L1_EXIT
+        { "ioctl.l1.exit",		"\tline %d"			},
+
+#define IOCTL_L2_TCSET
+        { "ioctl.l2.tcset",		"\tcmd = 0x%x"			},
+
+#define	IOCTL_L2_MR_SETFIFO
+	{ "ioctl.l2.mr_setfifo",	"\trcv_fifo 0x%x xmit_fifo 0x%x"},
+
+#define IOCTL_L2_MRREAD_TUNE
+        { "ioctl.l2.mrread_tune",       "\tget tuning parameters"	},
+
+#define	IOCTL_L2_TCSBRK
+	{ "ioctl.l2.tcsbrk",		"\tTCSBRK %d"			},
+
+#define	IOCTL_L2_TIOCSBRK
+	{ "ioctl.l2.tiocsbrk",		"\tTIOCSBRK"			},
+
+#define	IOCTL_L2_TIOCCBRK
+	{ "ioctl.l2.tioccbrk",		"\tTIOCCBRK"			},
+
+#define	IOCTL_L2_TIOCSDTR
+	{ "ioctl.l2.tiocsdtr",		"\tTIOCSDTR"			},
+
+#define	IOCTL_L2_TIOCCDTR
+	{ "ioctl.l2.tioccdtr",		"\tTIOCCDTR"			},
+
+#define	IOCTL_L2_TIOCMSET
+	{ "ioctl.l2.tiocmset",		"\tTIOCMSET 0x%x"		},
+
+#define	IOCTL_L2_TIOCMBIS
+	{ "ioctl.l2.tiocmbis",		"\tTIOCMBIS 0x%x"		},
+
+#define	IOCTL_L2_TIOCMBIC
+	{ "ioctl.l2.tiocmbic",		"\tTIOCMBIC 0x%x"		},
+
+#define	IOCTL_L2_TIOCMGET
+	{ "ioctl.l2.tiocmget",		"\tTIOCMGET 0x%x"		},
+
+#define	IOCTL_L2_UNKNOWN
+	{ "ioctl.l2.unknown",		"\tunknown ioctl = 0x%x"	},
+
+#define IOCTL_L2_IOCNAK
+        { "ioctl.l2.iocnak",		"\tioctl error, M_IOCNAK"	},
+
+#define IOCTL_L2_IOCACK
+        { "ioctl.l2.iocack",		"\tioctl acknowledge, M_IOCACK"	},
+/*
+ * reioctl
+ */
+
+#define REIOCTL_L1_ENTRY
+        { "reioctl.l1.entry",		"\tcfl = 0x%x"			},
+
+#define REIOCTL_L1_EXIT
+        { "reioctl.l1.exit",		"\tline %d"			},
+
+#define	REIOCTL_L2_IOCTL
+	{ "reioctl.l2.ioctl", "\tcall ioctl (cfl=0x%x, q=0x%x, mp=0x%x)"},
+
+/*
+ * param
+ */
+
+#define PARAM_L1_ENTRY
+        { "param.l1.entry",		"\tcfline=0x%x"			},
+
+#define PARAM_L1_EXIT	
+        { "param.l1.exit",		"\tline %d"			},
+
+#define PARAM_L2_CSIZE
+        { "param.l2.csize",		"\tchar size=%d"		},
+
+#define	PARAM_L2_PAREVEN
+	{ "param.l2.pareven",		"\tparity enabled even"		},
+
+#define	PARAM_L2_PARODD
+	{ "param.l2.parodd",		"\tparity enabled odd"		},
+
+#define	PARAM_L2_PARDIS
+	{ "param.l2.pardis",		"\tparity disabled"		},
+
+#define	PARAM_L2_STOP
+	{ "param.l2.stop",		"\t%d stop bits"		},
+
+#define	PARAM_L2_SETBAUD0
+	{ "param.l2.setbaud0",		"\tset baud=0, lower DTR"	},
+
+#define	PARAM_L2_SETBAUD
+	{ "param.l2.setbaud",		"\tset baud=%d"			},
+
+#define	PARAM_L2_CHAR_PERIOD
+	{ "param.l2.char_period",	"\tchar period = %d"		},
+
+/*
+ * start
+ */
+
+#define START_L3_ENTRY
+        { "start.l3.entry",		"\tcfline=0x%x"			},
+
+#define START_L3_EXIT
+        { "start.l3.exit",		"\tline %d"			},
+
+#define	START_L3_SENDQD
+	{ "start.l3.sendqd",		"\tsend queued char 0x%x '%c'"	},
+
+#define	START_L3_STOPPED
+	{ "start.l3.stopped",		"\toutput stopped (CF_OSTOPPED)"},
+
+#define	START_L3_TXSTOP
+	{ "start.l3.txstop",		"\toutput stopped (h/w)"	},
+
+#define START_L3_M_BREAK
+        { "start.l3.m_break",		"\tM_BREAK"			},
+
+#define	START_L3_M_DELAY
+	{ "start.l3.m_delay",		"\tM_DELAY"			},
+
+#define	START_L3_M_IOCTL
+	{ "start.l3.m_ioctl",		"\tM_IOCTL"			},
+
+#define START_L3_COUNT
+        { "start.l3.count",		"\txmit %d chars, msg cnt %d"	},
+
+#define START_L3_XMITCHAR
+        { "start.l3.xmitchar",		"\txmit 0x%x '%c', line %d"	},
+
+#define START_L3_LASTTXMP
+        { "start.l2.lasttxmp",		"\tlasttxmp == NULL"		},
+
+#define START_L3_STARTTIME
+        { "start.l3.starttime",	"\tstarttime tv_sec %ld tv_usec %ld"	},
+
+#define START_L3_UNKNOWN
+        { "start.l3.unknown",		"\tunknown ioctl 0x%x"		},
+
+#define START_L3_FIFOSAVE
+        { "start.l3.fifosave",		"\tfifocnt = %d"		},
+
+/*
+ * rstrt
+ */
+
+#define	RSTRT_L1_ENTRY
+	{ "rstrt.l1.entry",		NULL				},
+
+#define	RSTRT_L1_EXIT
+	{ "rstrt.l1.exit",		"\tline %d"			},
+
+/*
+ * mset
+ */
+
+#define	SETDTRRTS_L1_ENTRY
+	{ "mset.l1.entry",		"\tcfline=0x%x, value=0x%x, time=%d" },
+
+#define	SETDTRRTS_L1_EXIT
+	{ "mset.l1.exit",		"\tline %d"			},
+
+#define	SETDTRRTS_L2_SETBITS
+	{ "mset.l2.setbits",		"\tset DTR & RTS, time=%d"	},
+
+#define	SETDTRRTS_L2_DTRLOW
+	{ "mset.l2.dtrlow",		"\tsetting cfp->dtrlow"		},
+
+#define	SETDTRRTS_L2_SLEEP
+	{ "mset.l2.sleep",		"\tsleeping"			},
+
+/*
+ * intr
+ */
+
+#define INTR_L3_ENTRY
+        { "intr.l3.entry",		"\tcfl = 0x%x\tisr=0x%x"		},
+
+#define INTR_L3_EXIT
+        { "intr.l3.exit",		"\tline %d"			},
+
+#define	INTR_L3_UNKNOWN
+	{ "intr.l3.unknown",		"\tunknown interrupt=0x%x"	},
+
+/*
+ * rxintr
+ */
+
+#define RXINTR_L3_ENTRY
+        { "rxintr.l3.entry",		"\tcfl = 0x%x"			},
+
+#define RXINTR_L3_EXIT
+        { "rxintr.l3.exit",		"\tline %d"			},
+
+#define	RXINTR_L3_ALLOCB
+	{ "rxintr.l3.allocb",		"\tallocb, size=%d"		},
+
+#define RXINTR_L3_RCVCHAR
+	{ "rxintr.l3.rcvchar",		"\treceived char 0x%x '%c'"	},
+
+#define RXINTR_L3_TXSTOP
+        { "rxintr.l3.txstop",		"\treceived xoff, stop xmit"	},
+
+#define RXINTR_L3_TXSTART
+        { "rxintr.l3.txstart",		"\treceived xon, start xmit"	},
+
+/*
+ * rsintr
+ */
+
+#define RSINTR_L3_ENTRY
+        { "rsintr.l3.entry",		"\tcfl = 0x%x\tstatus = %d"	},
+
+#define RSINTR_L3_EXIT
+        { "rsintr.l3.exit",		"\tline %d"			},
+
+#define	RSINTR_L3_OVRRUN
+	{ "rsintr.l3.ovrrun",		"\tover run!"			},
+
+#define	RSINTR_L3_ALLOCB
+	{ "rsintr.l3.allocb",		"\tallocb, size=%d"		},
+
+#define	RSINTR_L3_FRMERR
+	{ "rsintr.l3.frmerr",		"\tframe error!"		},
+
+#define	RSINTR_L3_BRKDET
+	{ "rsintr.l3.brkdet",		"\treceived BREAK"		},
+
+#define	RSINTR_L3_PARERR
+	{ "rsintr.l3.parerr",		"\tparity error! 0x%x '%c'"	},
+
+#define RSINTR_L3_TXSTOP
+        { "rsintr.l3.txstop",		"\treceived xoff, stop xmit"	},
+
+#define RSINTR_L3_TXSTART
+        { "rsintr.l3.txstart",		"\treceived xon, start xmit"	},
+
+/*
+ * rstimeout
+ */
+
+#define RXTIMEOUT_L3_ENTRY
+        { "rxtimeout.l3.entry",		"\tcfl = 0x%x"			},
+
+#define RXTIMEOUT_L3_EXIT
+        { "rxtimeout.l3.exit",		"\tline %d"			},
+
+#define RXTIMEOUT_L3_CANPUT
+        { "rxtimeout.l3.canput",	"\tsend message upstream"	},
+
+#define RXTIMEOUT_L3_RCVCHAR
+	{ "rxtimeout.l3.rcvchar",	"\treceived char 0x%x '%c'"	},
+
+#define RXTIMEOUT_L3_TXSTOP
+        { "rxtimeout.l3.txstop",	"\treceived xoff, stop xmit"	},
+
+#define RXTIMEOUT_L3_TXSTART
+        { "rxtimeout.l3.txstart",	"\treceived xon, start xmit"	},
+
+#define RXTIMEOUT_L3_LASTRXMP
+        { "rxtimeout.l3.lastrxmp",	"\tlastrxmp == 0x%x"		},
+
+/*
+ * txintr
+ */
+
+#define TXINTR_L3_ENTRY
+        { "txintr.l3.entry",		"\tcfl = 0x%x"			},
+
+#define TXINTR_L3_EXIT
+        { "txintr.l3.exit",		"\tline %d"			},
+
+/*
+ * mintr
+ */
+
+#define MINTR_L3_ENTRY
+        { "mintr.l3.entry",		"\tcfl = 0x%x, msr = 0x%x"	},
+
+#define MINTR_L3_EXIT
+        { "mintr.l3.exit",		NULL				},
+
+#define	MINTR_L3_CD_WAKEUP
+	{ "mintr.l3.cd_wakeup",		"\tCD high (or carrier) wakeup"	},
+
+#define	MINTR_L3_CD_UNHANGUP
+	{ "mintr.l3.cd_unhangup",	"\tCD high, send M_UNHANGUP"	},
+
+#define MINTR_L3_CDLOW
+        { "mintr.l3.nocd",		"\tCD low"			},
+
+#define	MINTR_L3_M_HANGUP
+	{ "mintr.l3.m_hangup",		"\tsend M_HANGUP"		},
+
+#define MINTR_L3_CTSHIGH
+        { "mintr.l3.ctshigh",		"\tCTS high"			},
+
+#define MINTR_L3_TXSTART
+        { "mintr.l3.txstart",		"\tstart transmitting"		},
+
+#define MINTR_L3_CTSLOW
+        { "mintr.l3.ctslow",		"\tCTS low"			},
+
+#define MINTR_L3_TXSTOP
+        { "mintr.l3.txstop",		"\tstop transmitting"		},
+
+#define MINTR_L3_NOCD
+        { "mintr.l3.nocd",		"\tno CD"			},
+
+#define MINTR_L3_CURTIME
+        { "mintr.l3.curtime",	"\tcurrent time tv_sec %ld tv_usec %ld"	},
+
+#define MINTR_L3_CHARSENT
+        { "mintr.l3.charsent", "\tnchar sent = %d tv_sec %ld tv_usec %ld"},
+
+#define MINTR_L3_CLEAR_FIFO
+        { "mintr.l3.clear_fifo",	"\trefill fifo from silo"	},
+
+/*
+ * stash
+ */
+
+#define STASH_L3_ENTRY
+        { "stash.l3.entry",		"\tq=0x%x\tc=0x%x '%c'"		},
+
+#define STASH_L3_ALLOCB
+        { "stash.l3.allocb",		"\tline %d"			},
+
+#define STASH_L3_PUTNEXT
+        { "stash.l3.putnext",		"\tputnext"			},
+
+#define STASH_L3_DROPDATA
+        { "stash.l3.dropdata",		"\tOops, we dropped data!"	},
+
+#define STASH_L3_EXIT
+        { "stash.l3.exit",		"\tline %d"			},
+
+/*
+ * pushdb
+ */
+#define PUSHDB_L1_ENTRY
+        { "pushdb.l1.entry",		"\tcfline 0x%x"			},
+
+#define PUSHDB_L2_TIMEOUT
+        { "pushdb.l1.timeout",		"\ttimeout called"		},
+
+#define PUSHDB_L1_EXIT
+        { "pushdb.l1.exit",		"\tline %d"			},
+
+/*
+ * * * * * * * * * * * * Events for PARALLEL PORTS * * * * * * * * * * * *
+ */
+
+/*
+ * popen
+ */
+
+#define POPEN_L1_ENTRY
+        { "Popen.l1.entry",		"\tq=0x%x\tflag=%d\tsflag =%d"	},
+
+#define POPEN_L1_EXIT
+        { "Popen.l1.exit",		"\tline %d"			},
+
+#define	POPEN_L2_FNDELAY
+	{ "Popen.l2.fndelay",		"\topened with FNDELAY"		},
+
+#define	POPEN_L2_NOTREADY
+	{ "Popen.l2.notready",	"\tprinter not ready, status=0x%x"	},
+
+#define	POPEN_L2_1STOPEN
+	{ "Popen.l2.1stopen",		"\tfirst open"			},
+
+/*
+ * pclose
+ */
+
+#define PCLOSE_L1_ENTRY
+        { "Pclose.l1.entry",		"\tq=%x\tflag=%x"		},
+
+#define PCLOSE_L1_EXIT
+        { "Pclose.l1.exit",		"\tline %d"			},
+
+#define PCLOSE_L1_LASTTXMP
+        { "Pclose.l2.freemp",		"\tlasttxmp != NULL"		},
+
+/*
+ * ptimeout
+ */
+
+#define PTIMEOUT_L1_ENTRY
+        { "Ptimeout.l1.entry",		"\tcfpline=0x%x\tsent_OK=%d"	},
+
+#define PTIMEOUT_L1_EXIT
+        { "Ptimeout.l1.exit",		"\tn %d"			},
+
+#define PTIMEOUT_L2_M_ERROR
+        { "Ptimeout.l2.m_error",	"\tsend M_ERROR"		},
+
+/*
+ * pwput
+ */
+
+#define PWPUT_L1_ENTRY
+        { "Pwput.l1.entry",		"\tq=0x%x\tmp=0x%x"		},
+
+#define PWPUT_L1_EXIT	
+        { "Pwput.l1.exit",		"\tline %d" 			},
+
+#define PWPUT_L2_M_FLUSH
+        { "Pwput.l2.m_flush",		"\tM_FLUSH"			},
+
+#define PWPUT_L2_M_IOCTL
+        { "Pwput.l2.m_ioctl",		"\tM_IOCTL"			},
+
+#define PWPUT_L2_TCSBRK
+        { "Pwput.l2.tcsbrk",		"\tTCSBRK"			},
+
+#define PWPUT_L2_M_DATA
+        { "Pwput.l2.m_data",		"\tM_DATA"			},
+
+#define	PWPUT_L2_UNKNOWN
+	{ "Pwput.l2.unknown",	"\tunknown streams message=0x%x"	},
+
+/* 
+ * PWSRV
+ */
+
+#define PWSRV_L1_ENTRY
+        { "Pwsrv.l1.entry",		"\tq=0x%x"			},
+
+#define PWSRV_L1_EXIT
+        { "Pwsrv.l1.exit",		"\tline %d"			},
+
+#define PWSRV_L2_M_IOCTL
+        { "Pwsrv.l2.m_ioctl",		"\tM_IOCTL"			},
+
+#define PWSRV_L2_M_DATA
+        { "Pwsrv.l2.m_data",		"\tM_DATA"			},
+
+#define PWSRV_L2_UNKNOWN
+        { "Pwsrv.l2.unknown",	"\tunknown streams message=0x%x"	},
+
+/*
+ * pstart
+ */
+
+#define PSTART_L3_ENTRY
+        { "Pstart.l3.entry",		"\tcfpline=0x%x"		},
+
+#define PSTART_L3_EXIT
+        { "Pstart.l3.exit",		"\tline %d"			},
+
+#define PSTART_L3_OFFLINE
+        { "Pstart.l3.offline",		"\toff line, try again"		},
+
+#define PSTART_L3_STATUS_ERROR
+        { "Pstart.l3.status.error",	"\tstatus (0x%x) & mask (0x%x) != normal (0x%x)"},
+
+#define	PSTART_L3_XMIT
+	{ "Pstart.l3.xmit",		"\tstart xmit %d, fifocnt %d"	},
+
+#define PSTART_L2_LASTTXMP
+        { "Pstart.l2.lasttxmp",		"\tlasttxmp == NULL"		},
+
+#define PSTART_L2_NEXTTXMP
+        { "Pstart.l2.nexttxmp",		"\tnexttxmp == NULL"		},
+
+#define PSTART_L3_XMITCHAR
+        { "Pstart.l3.xmitchar",		"\txmit char 0x%x '%c'"		},
+
+#define PSTART_L3_NO_PAPER
+        { "Pstart.l3.no_paper",		"\tno paper, try again"		},
+
+#define PSTART_L3_M_IOCTL
+	{ "start.l3.m_ioctl",		"\tM_IOCTL"			},
+
+#define PSTART_L3_M_DELAY
+	{ "start.l3.m_delay",		"\tM_DELAY"			},
+
+#define PSTART_L3_UNKNOWN
+        { "Pstart.l3.unknown",		"\tunknown status=0x%x"		},
+
+#define	PSTART_L3_NODATA
+	{ "Pstart.l3.nodata",		"\tno data to send"		},
+
+#define PSTART_L3_SLEEP
+        { "Pstart.l3.sleep",		"\tsleeping, staus = 0x%x"	},
+
+#define	PSTART_L3_RETIMEOUT
+	{ "Pstart.l3.retimeout",	"\treenable timeouts"		},
+
+/*
+ * rstrt
+ */
+
+#define PRESTART_L1_ENTRY
+        { "Prestart.l1.entry",		"\tcfpline=0x%x"		},
+
+#define	PRESTART_L1_EXIT
+        { "Prestart.l1.exit",		"\tline %d"			},
+
+/*
+ * pioctl
+ */
+
+#define PIOCTL_L1_ENTRY
+        { "Pioctl.l1.entry",	"\tcfpline=0x%x\tq=0x%x\tmp=0x%x"	},
+
+#define PIOCTL_L1_EXIT
+        { "Pioctl.l1.exit",		"\tline %d"			},
+
+#define	PIOCTL_L2_TTYIOCTL
+	{ "Pioctl.l2.ttyioctl",		"\tcall ttycommon_ioctl"	},
+
+#define	PIOCTL_L2_TCSBRK
+	{ "Pioctl.l2.tcsbrk",		"\tTCSBRK"			},
+
+#define	PIOCTL_L2_MR_PPSETFIFO
+	{ "Pioctl.l2.mr_ppsetfifo", "\tset to transmit 0x%x chars each time"},
+
+#define	PIOCTL_L2_MRSEND_TUNE
+	{ "Pioctl.l2.mrsend_tune", "\tburst=%d, retry=%d, cpu_idle=%d"	},
+
+#define	PIOCTL_L2_MRREAD_TUNE
+	{ "Pioctl.l2.mrread_tune", "\tburst=%d, retry=%d, cpu_idle=%d"	},
+
+#define	PIOCTL_L2_MRIGNORE_PERRS
+	{ "Pioctl.l2.mrignore_perrs",	"\tignore perrs, mask=0x%x, cond=0x%x"},
+
+#define	PIOCTL_L2_MRIGNORE_RESET
+	{ "Pioctl.l2.mrignore_reset",	"\tperrs reset, mask=0x%x, cond=0x%x"},
+
+#define	PIOCTL_L2_MDRVP_GETPARAM
+	{ "Pioctl.l2.mdrvp_getparam",	"\tget signals, mask=0x%x, value1=0x%x, value2=0x%x"},
+
+#define	PIOCTL_L2_MDRVP_SETPARAM
+	{ "Pioctl.l2.mdrvp_setparam",	"\tset signals, mask=0x%x, value1=0x%x, value2=0x%x"},
+
+#define	PIOCTL_L2_UNKNOWN
+	{ "Pioctl.l2.unknown",		"\tunknown ioctl 0x%x"		},
+
+/*
+ * reioctl
+ */
+
+#define PREIOCTL_L1_ENTRY
+        { "Preioctl.l1.entry",		"\tcfp = 0x%x"			},
+
+#define PREIOCTL_L1_EXIT
+        { "Preioctl.l1.exit",		"\tline %d"			},
+
+/*
+ * pintr
+ */
+
+#define PINTR_L3_ENTRY
+        { "Pintr.l3.entry",		"\tcfp = 0x%x"			},
+
+#define PINTR_L3_EXIT
+        { "Pintr.l3.exit",		"\tline %d" 			},
+
+#define	PINTR_L3_XMITCHAR
+        { "Pintr.l3.xmitchar",		"\txmit 0x%x '%c'"		},
+
+#define	PINTR_L3_BUSY
+	{ "Pintr.l3.busy",		"\tbusy, break from reading"	},
+
+#define	PINTR_L3_ACK
+	{ "Pintr.l3.ack",		"\tacknowledge received"	},
+
+/*
+ * pintena
+ */
+
+#define PINTENA_L1_ENTRY
+        { "Pintena.l1.entry",		"\tcfPline=0x%x"		},
+
+#define PINTENA_L1_EXIT
+        { "Pintena.l1.exit",		"\tline %d" 			},
+
+/*
+ * pwatchdog
+ */
+
+#define PWATCHDOG_L1_ENTRY
+        { "Pwatchdog.l1.entry",		"\tcfpline=0x%x"		},
+
+#define PWATCHDOG_L1_EXIT
+        { "Pwatchdog.l1.exit",		"\tline %d"			},
+
+	 /* add more events here... */
+
+#define CHECK_POINT
+	{ "check.point",		"\tcheck point %d, %d"		},
+
+#define TIME_CHECK
+	{ "time.check",			"\ttv_sec %d, tv_usec %d pt %d"	},
+
+#define STATUS_CHECK
+	{ "status.check",		"\tmask 0x%x, status 0x%x"	},
+
+	{ NULL,				NULL				}
+};
+
+/* size of event table */
+int xxtrevents = sizeof (event_tab) / sizeof (event_tab[0]);

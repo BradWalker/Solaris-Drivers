@@ -1,0 +1,167 @@
+#!/bin/sh
+#
+# Solaris 2 (SunOS 5) information grabbing script.
+#
+# This script is specific to the 1600SE products
+#  under Solaris 2.
+#
+# $Header: /vol/sources.cvs/dev/sio16.svr4/sysinfo,v 1.2 1996/09/20 21:25:19 bkd Exp $
+#
+
+echo ""
+echo "This is sysinfo.  It will gather system information"
+echo "and place it in the file sysinfo.out.  This may take"
+echo "several minutes."
+echo ""
+echo "Please wait while it runs..."
+
+rm -f sysinfo.out
+date > sysinfo.out
+echo 'Script: $Header: /vol/sources.cvs/dev/sio16.svr4/sysinfo,v 1.2 1996/09/20 21:25:19 bkd Exp $' >> sysinfo.out
+
+#
+# System generic information
+#
+
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- showrev  -------------------------------" >> sysinfo.out
+showrev >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- showrev -p -----------------------------" >> sysinfo.out
+showrev -p >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- uname -a -------------------------------" >> sysinfo.out
+uname -a >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- dmesg ----------------------------------" >> sysinfo.out
+dmesg >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- df -k ----------------------------------" >> sysinfo.out
+df -k >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- eeprom ---------------------------------" >> sysinfo.out
+eeprom >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- vmstat ---------------------------------" >> sysinfo.out
+vmstat >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- netstat -m -----------------------------" >> sysinfo.out 
+netstat -m >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- lpstat -t ------------------------------" >> sysinfo.out
+lpstat -t >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- pmadm -l -------------------------------" >> sysinfo.out
+pmadm -l >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- tail -120 /var/adm/messages ------------" >> sysinfo.out
+tail -120 /var/adm/messages >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- prtconf -pv -----------------------------" >> sysinfo.out
+prtconf -pv >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- prtconf -v -----------------------------" >> sysinfo.out
+prtconf -v >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- modinfo --------------------------------" >> sysinfo.out
+modinfo >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- pkginfo -l -----------------------------" >> sysinfo.out
+pkginfo -l >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+
+
+#
+# Contents of key /etc files
+#
+
+echo "-- /etc/ttydefs ---------------------------" >> sysinfo.out
+cat /etc/ttydefs >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- /etc/driver_aliases --------------------" >> sysinfo.out
+cat /etc/driver_aliases >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- /etc/devlink.tab -----------------------" >> sysinfo.out
+cat /etc/devlink.tab >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- /etc/iu.ap -----------------------------" >> sysinfo.out
+cat /etc/iu.ap >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- /etc/system ----------------------------" >> sysinfo.out
+cat /etc/system >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- /etc/path_to_inst ----------------------" >> sysinfo.out
+cat /etc/path_to_inst >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+
+#
+# Product specific
+
+
+echo "-- pwd -----------------------------------" >> sysinfo.out
+pwd >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- ls -laR -------------------------------" >> sysinfo.out
+ls -laR >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- what /kernel/drv/sio16 --------------" >> sysinfo.out
+strings /kernel/drv/sio16 2>> sysinfo.out | fgrep '@(#)' >> sysinfo.out 2>&1
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+
+#
+# Looking at kernel (requires root permission)
+#
+
+echo "-- Kernel information ----------------------" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "  -- adb /dev/kmem output ------------------" >> sysinfo.out
+adb /dev/ksyms /dev/kmem << END_OF_FILE >> sysinfo.out 2>&1
+*romp+c/xx
+\$q
+END_OF_FILE
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "  -- adb output ----------------------------" >> sysinfo.out
+adb -k /dev/ksyms /dev/mem << END_OF_FILE >> sysinfo.out 2>&1
+\$<utsname
+hw_provider/s
+architecture/s
+srpc_domain/s
+time/Y
+time/X
+lbolt/X
+*time-(*lbolt%0t100)=Y
+SccsId/s
+\$<msgbuf
+msgbuf+12/s
+\$q
+END_OF_FILE
+echo "" >> sysinfo.out
+echo "" >> sysinfo.out
+echo "-- End of information ----------------------" >> sysinfo.out
+echo "done."
